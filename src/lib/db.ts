@@ -6,7 +6,8 @@ export const db = supabase as unknown as {
   from: (table: string) => any;
 };
 
-export type Row = Record<string, any>;
+/* eslint-disable @typescript-eslint/no-explicit-any */
+export type Row = any;
 
 export async function fetchList(
   table: string,
