@@ -32,7 +32,7 @@ export const listQuery = (
 
 export async function fetchPageContent(): Promise<Record<string, string>> {
   const rows = await fetchList("page_content", { order: "key" });
-  return Object.fromEntries(rows.map((r) => [r.key as string, (r.value ?? "") as string]));
+  return Object.fromEntries(rows.map((r) => [r["key"] as string, (r["value"] ?? "") as string]));
 }
 
 export const pageContentQuery = {
