@@ -29,21 +29,21 @@ function Home() {
   const { data: generations = [] } = useQuery(listQuery("generations"));
   const { data: sponsors = [] } = useQuery(listQuery("sponsors"));
 
-  const heroImage = generations.find((g: Row) => g.cover_image_url)?.cover_image_url as
-    | string
-    | undefined;
+  const heroImage =
+    content(cms, "home_hero_image", "") ||
+    (generations.find((g: Row) => g.cover_image_url)?.cover_image_url as string | undefined) ||
+    "/hero-buggy.webp";
 
   return (
     <div>
       <section className="relative overflow-hidden border-b border-border">
-        {heroImage && (
-          <img
-            src={heroImage}
-            alt="Team Saksham International Baja buggy"
-            className="absolute inset-0 h-full w-full object-cover opacity-35"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/40" />
+        <img
+          src={heroImage}
+          alt="Team Saksham International Baja buggy"
+          className="absolute inset-0 h-full w-full object-cover object-right opacity-70"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/75 to-background/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
         <div className="section-x relative mx-auto flex min-h-[78vh] max-w-7xl flex-col justify-center py-20">
           <Reveal>
             <p className="font-mono text-xs uppercase tracking-[0.4em] text-primary">

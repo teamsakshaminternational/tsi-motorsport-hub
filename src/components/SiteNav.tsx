@@ -18,11 +18,22 @@ export function SiteNav() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
-      <div className="section-x mx-auto flex h-16 max-w-7xl items-center justify-between">
-        <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <span className="h-6 w-1.5 bg-primary" />
-          <span className="font-display text-xl leading-none tracking-wide">
-            TEAM <span className="text-primary">SAKSHAM</span>
+      <div className="section-x mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between">
+        <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
+          <img
+            src="/tsi-logo.webp"
+            alt="TSI logo"
+            width={640}
+            height={383}
+            className="h-11 w-auto"
+          />
+          <span className="flex flex-col font-display leading-none tracking-wide">
+            <span className="text-lg">
+              TEAM <span className="text-primary">SAKSHAM</span>
+            </span>
+            <span className="mt-1 text-[0.7rem] tracking-[0.32em] text-muted-foreground">
+              INTERNATIONAL
+            </span>
           </span>
         </Link>
 
