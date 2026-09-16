@@ -2,7 +2,6 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 import { LogOut } from "lucide-react";
-import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminSession } from "@/hooks/useAdminSession";
 import { CrudSection, type Field } from "@/components/admin/CrudSection";
@@ -181,12 +180,12 @@ function Admin() {
   const [tab, setTab] = useState(sections[0]!.key);
 
   async function signIn() {
-    const result = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin + "/admin",
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: window.location.origin + "/admin" },
     });
-    if (result.error) {
+    if (error) {
       toast.error("Sign-in failed. Please try again.");
-      return;
     }
   }
 
