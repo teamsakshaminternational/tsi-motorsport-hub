@@ -21,12 +21,12 @@ export type Field = {
 type Props = {
   table: string;
   title: string;
-  description?: string;
+  description?: string | undefined;
   fields: Field[];
   /** Column used as the card title in the list. */
-  labelField?: string;
+  labelField?: string | undefined;
   /** Column used to group the list (usually a foreign key). */
-  groupBy?: string;
+  groupBy?: string | undefined;
 };
 
 function emptyDraft(fields: Field[]): Row {
@@ -129,7 +129,7 @@ export function CrudSection({
     setBusy(true);
     try {
       const url = await uploadImage(file, table);
-      setEditing((prev) => ({ ...(prev ?? {}), [field.name]: url }));
+      setEditing((prev: Row | null) => ({ ...(prev ?? {}), [field.name]: url }));
       toast.success("Image uploaded");
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Upload failed");
@@ -251,7 +251,7 @@ export function CrudSection({
               {fields.map((f) => {
                 const value = editing[f.name] ?? "";
                 const set = (v: unknown) =>
-                  setEditing((prev) => ({ ...(prev ?? {}), [f.name]: v }));
+                  setEditing((prev: Row | null) => ({ ...(prev ?? {}), [f.name]: v }));
                 const inputClass =
                   "w-full rounded border border-border bg-background px-3 py-2 text-sm outline-none focus:border-primary";
                 return (

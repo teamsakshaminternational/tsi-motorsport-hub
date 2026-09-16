@@ -178,7 +178,7 @@ const sections: {
 
 function Admin() {
   const { loading, session, isAdmin } = useAdminSession();
-  const [tab, setTab] = useState(sections[0].key);
+  const [tab, setTab] = useState(sections[0]!.key);
 
   async function signIn() {
     const result = await lovable.auth.signInWithOAuth("google", {
@@ -228,7 +228,7 @@ function Admin() {
     );
   }
 
-  const active = sections.find((s) => s.key === tab) ?? sections[0];
+  const active = sections.find((s) => s.key === tab) ?? sections[0]!;
 
   return (
     <div className="section-x mx-auto max-w-7xl py-12">
