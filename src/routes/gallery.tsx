@@ -22,7 +22,7 @@ export const Route = createFileRoute("/gallery")({
       },
     ],
   }),
-  component: Gallery;
+  component: Gallery,
 });
 
 function Gallery() {
