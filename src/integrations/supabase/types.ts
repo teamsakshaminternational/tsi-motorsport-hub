@@ -14,13 +14,343 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          created_at: string
+          description: string | null
+          event: string | null
+          id: string
+          image_url: string | null
+          position: string | null
+          sort_order: number
+          title: string
+          year: string | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          event?: string | null
+          id?: string
+          image_url?: string | null
+          position?: string | null
+          sort_order?: number
+          title: string
+          year?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          event?: string | null
+          id?: string
+          image_url?: string | null
+          position?: string | null
+          sort_order?: number
+          title?: string
+          year?: string | null
+        }
+        Relationships: []
+      }
+      admins: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      alumni: {
+        Row: {
+          batch_year: string
+          created_at: string
+          current_role_text: string | null
+          id: string
+          linkedin_url: string | null
+          name: string
+          photo_url: string | null
+          position: string | null
+          sort_order: number
+        }
+        Insert: {
+          batch_year: string
+          created_at?: string
+          current_role_text?: string | null
+          id?: string
+          linkedin_url?: string | null
+          name: string
+          photo_url?: string | null
+          position?: string | null
+          sort_order?: number
+        }
+        Update: {
+          batch_year?: string
+          created_at?: string
+          current_role_text?: string | null
+          id?: string
+          linkedin_url?: string | null
+          name?: string
+          photo_url?: string | null
+          position?: string | null
+          sort_order?: number
+        }
+        Relationships: []
+      }
+      blog_posts: {
+        Row: {
+          author: string | null
+          content: string | null
+          cover_image_url: string | null
+          created_at: string
+          excerpt: string | null
+          id: string
+          published: boolean
+          published_at: string | null
+          slug: string
+          sort_order: number
+          title: string
+        }
+        Insert: {
+          author?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug: string
+          sort_order?: number
+          title: string
+        }
+        Update: {
+          author?: string | null
+          content?: string | null
+          cover_image_url?: string | null
+          created_at?: string
+          excerpt?: string | null
+          id?: string
+          published?: boolean
+          published_at?: string | null
+          slug?: string
+          sort_order?: number
+          title?: string
+        }
+        Relationships: []
+      }
+      generation_photos: {
+        Row: {
+          caption: string | null
+          created_at: string
+          generation_id: string
+          id: string
+          image_url: string
+          sort_order: number
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          generation_id: string
+          id?: string
+          image_url: string
+          sort_order?: number
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          generation_id?: string
+          id?: string
+          image_url?: string
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "generation_photos_generation_id_fkey"
+            columns: ["generation_id"]
+            isOneToOne: false
+            referencedRelation: "generations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      generations: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          sort_order: number
+          year: string | null
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          sort_order?: number
+          year?: string | null
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          sort_order?: number
+          year?: string | null
+        }
+        Relationships: []
+      }
+      members: {
+        Row: {
+          created_at: string
+          id: string
+          linkedin_url: string | null
+          name: string
+          photo_url: string | null
+          position: string | null
+          sort_order: number
+          subteam_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linkedin_url?: string | null
+          name: string
+          photo_url?: string | null
+          position?: string | null
+          sort_order?: number
+          subteam_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linkedin_url?: string | null
+          name?: string
+          photo_url?: string | null
+          position?: string | null
+          sort_order?: number
+          subteam_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "members_subteam_id_fkey"
+            columns: ["subteam_id"]
+            isOneToOne: false
+            referencedRelation: "subteams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      newsletter_subscribers: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
+      page_content: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          value: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          value?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          value?: string | null
+        }
+        Relationships: []
+      }
+      sponsors: {
+        Row: {
+          created_at: string
+          id: string
+          logo_url: string | null
+          name: string
+          sort_order: number
+          tier: string | null
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name: string
+          sort_order?: number
+          tier?: string | null
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          logo_url?: string | null
+          name?: string
+          sort_order?: number
+          tier?: string | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      subteams: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          name: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          name?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       [_ in never]: never
