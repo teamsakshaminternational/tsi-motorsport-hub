@@ -111,12 +111,21 @@ const sections: {
     table: "alumni",
     title: "Alumni",
     description:
-      "Edit alumni profiles directly. Approvals, cars, contacts and invites are in the Alumni network tab.",
+      "Edit alumni profiles directly, including the cars they worked on. Approvals, contacts and invites are in the Alumni network tab.",
     fields: [
       { name: "name", label: "Name", required: true },
       { name: "batch_year", label: "Batch (shown when no graduation year)", required: true, placeholder: "2023" },
       { name: "graduation_year", label: "Graduation year", placeholder: "2023" },
       { name: "joined_year", label: "Joined TSI", placeholder: "2019" },
+      {
+        name: "_cars",
+        label: "Cars worked on (click to add or remove)",
+        type: "links",
+        optionsTable: "generations",
+        linkTable: "alumni_generations",
+        linkOwnerKey: "alumni_id",
+        linkOptionKey: "generation_id",
+      },
       { name: "subteam", label: "Department", placeholder: "Drivetrain" },
       { name: "position", label: "Role in team", placeholder: "Captain" },
       { name: "current_role_text", label: "Job title", placeholder: "Design Engineer" },

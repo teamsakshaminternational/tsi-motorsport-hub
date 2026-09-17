@@ -6,7 +6,15 @@ import { db, fetchList, listQuery, type Row } from "@/lib/db";
 import { uploadImage } from "@/lib/upload";
 import { Thumb } from "@/components/Thumb";
 
-export type FieldType = "text" | "textarea" | "number" | "image" | "checkbox" | "select" | "date";
+export type FieldType =
+  | "text"
+  | "textarea"
+  | "number"
+  | "image"
+  | "checkbox"
+  | "select"
+  | "date"
+  | "links";
 
 export type Field = {
   name: string;
@@ -17,6 +25,12 @@ export type Field = {
   optionsTable?: string;
   optionsLabel?: string;
   placeholder?: string;
+  /** For `links`: many-to-many table, e.g. alumni_generations. */
+  linkTable?: string;
+  /** Column in linkTable pointing at this row, e.g. alumni_id. */
+  linkOwnerKey?: string;
+  /** Column in linkTable pointing at the option, e.g. generation_id. */
+  linkOptionKey?: string;
 };
 
 type Props = {
@@ -38,7 +52,8 @@ type Props = {
 
 function emptyDraft(fields: Field[]): Row {
   const draft: Row = {};
-  for (const f of fields) draft[f.name] = f.type === "checkbox" ? false : "";
+  for (const f of fields)
+    draft[f.name] = f.type === "checkbox" ? false : f.type === "links" ? [] : "";
   return draft;
 }
 
@@ -61,7 +76,10 @@ export function CrudSection({
   const [busy, setBusy] = useState(false);
 
   const selectTables = useMemo(
-    () => fields.filter((f) => f.type === "select" && f.optionsTable).map((f) => f.optionsTable!),
+    () =>
+      fields
+        .filter((f) => (f.type === "select" || f.type === "links") && f.optionsTable)
+        .map((f) => f.optionsTable!),
     [fields],
   );
   const { data: optionData = {} } = useQuery({
@@ -73,6 +91,24 @@ export function CrudSection({
       return out;
     },
   });
+
+  const linkFields = fields.filter((f) => f.type === "links");
+
+  async function openEdit(row: Row) {
+    const draft: Row = { ...row };
+    for (const f of linkFields) {
+      const { data, error } = await db
+        .from(f.linkTable!)
+        .select(f.linkOptionKey!)
+        .eq(f.linkOwnerKey!, row.id);
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      draft[f.name] = ((data ?? []) as Row[]).map((d) => d[f.linkOptionKey!]);
+    }
+    setEditing(draft);
+  }
 
   function refresh() {
     void qc.invalidateQueries();
@@ -89,6 +125,7 @@ export function CrudSection({
     setBusy(true);
     const payload: Row = {};
     for (const f of fields) {
+      if (f.type === "links") continue;
       let value = editing[f.name];
       if (value === "") value = null;
       if (f.type === "number") value = value === null ? 0 : Number(value);
@@ -96,15 +133,38 @@ export function CrudSection({
     }
     const { id } = editing;
     const res = id
-      ? await db.from(table).update(payload).eq("id", id)
+      ? await db.from(table).update(payload).eq("id", id).select("id").single()
       : await db
           .from(table)
-          .insert(sortable ? { ...payload, sort_order: rows.length } : payload);
-    setBusy(false);
+          .insert(sortable ? { ...payload, sort_order: rows.length } : payload)
+          .select("id")
+          .single();
     if (res.error) {
+      setBusy(false);
       toast.error(res.error.message);
       return;
     }
+    const savedId = (res.data as Row).id;
+    for (const f of linkFields) {
+      const chosen: string[] = editing[f.name] ?? [];
+      const del = await db.from(f.linkTable!).delete().eq(f.linkOwnerKey!, savedId);
+      const ins = chosen.length
+        ? await db.from(f.linkTable!).insert(
+            chosen.map((optionId) => ({
+              [f.linkOwnerKey!]: savedId,
+              [f.linkOptionKey!]: optionId,
+            })),
+          )
+        : { error: null };
+      const linkError = del.error ?? ins.error;
+      if (linkError) {
+        setBusy(false);
+        toast.error(`Saved, but ${f.label.toLowerCase()} failed: ${linkError.message}`);
+        refresh();
+        return;
+      }
+    }
+    setBusy(false);
     toast.success(id ? "Saved" : "Added");
     setEditing(null);
     refresh();
@@ -234,7 +294,7 @@ export function CrudSection({
                 )}
                 <button
                   aria-label="Edit"
-                  onClick={() => setEditing({ ...row })}
+                  onClick={() => void openEdit(row)}
                   className="rounded border border-border p-2 hover:border-primary hover:text-primary"
                 >
                   <Pencil className="h-4 w-4" />
@@ -310,6 +370,32 @@ export function CrudSection({
                           </option>
                         ))}
                       </select>
+                    ) : f.type === "links" ? (
+                      <div className="flex flex-wrap gap-2">
+                        {(optionData[f.optionsTable ?? ""] ?? []).map((o) => {
+                          const chosen: string[] = editing[f.name] ?? [];
+                          const on = chosen.includes(o.id);
+                          return (
+                            <button
+                              key={o.id}
+                              type="button"
+                              onClick={() =>
+                                set(on ? chosen.filter((x) => x !== o.id) : [...chosen, o.id])
+                              }
+                              className={`rounded-full border px-3 py-1.5 text-xs ${
+                                on
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-border hover:border-primary"
+                              }`}
+                            >
+                              {o[f.optionsLabel ?? "name"]}
+                            </button>
+                          );
+                        })}
+                        {(optionData[f.optionsTable ?? ""] ?? []).length === 0 && (
+                          <span className="text-xs text-muted-foreground">Loading…</span>
+                        )}
+                      </div>
                     ) : f.type === "image" ? (
                       <div className="space-y-2">
                         {value && (
