@@ -1,10 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import { CountUp } from "@/components/CountUp";
 import { Reveal } from "@/components/Reveal";
 import { content, listQuery, pageContentQuery, type Row } from "@/lib/db";
+import { preloadQueries } from "@/lib/preload";
+import { Thumb } from "@/components/Thumb";
 
 const mediaBase = "https://cazhbqmbtlvqcahgyvba.supabase.co/storage/v1/object/public/media";
 
@@ -19,8 +21,19 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
     ],
   }),
-  component: Home,
+  loader: ({ context }) =>
+    preloadQueries(context.queryClient, [pageContentQuery, listQuery("achievements"), listQuery("generations"), listQuery("sponsors"), listQuery("alumni")]),
+  component: HomePage,
 });
+
+function HomePage() {
+  const state = Route.useLoaderData();
+  return (
+    <HydrationBoundary state={state}>
+      <Home />
+    </HydrationBoundary>
+  );
+}
 
 function Home() {
   const { data: cms } = useQuery(pageContentQuery);
@@ -75,7 +88,7 @@ function Home() {
         <div className="section-x mx-auto flex max-w-7xl items-end justify-between gap-4"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">Built generation by generation</p><h2 className="mt-3 text-4xl md:text-6xl">The machines</h2></Reveal><span className="hidden text-xs uppercase tracking-widest text-muted-foreground sm:block">Drag to explore</span></div>
         <div ref={stripRef} className="hide-scrollbar mt-9 flex cursor-grab snap-x snap-mandatory gap-4 overflow-x-auto px-5 active:cursor-grabbing md:px-10 xl:px-[max(4rem,calc((100vw-80rem)/2))]" onPointerDown={(e) => { const node = stripRef.current; if (!node) return; drag.current = { active: true, start: e.clientX, scroll: node.scrollLeft }; node.setPointerCapture(e.pointerId); }} onPointerMove={(e) => { const node = stripRef.current; if (!node || !drag.current.active) return; node.scrollLeft = drag.current.scroll - (e.clientX - drag.current.start); }} onPointerUp={() => { drag.current.active = false; }} onPointerCancel={() => { drag.current.active = false; }}>
           {generations.map((g: Row) => <Link key={g.id} to="/gallery" hash={g.id} className="group relative block aspect-[4/5] w-[78vw] max-w-sm shrink-0 snap-start overflow-hidden rounded border border-border bg-surface sm:w-[42vw] lg:w-[28vw]">
-            {g.cover_image_url ? <img src={g.cover_image_url} alt={`${g.name} Baja buggy`} loading="lazy" decoding="async" draggable={false} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <div className="h-full w-full bg-surface-2" />}
+            {g.cover_image_url ? <Thumb src={g.cover_image_url} alt={`${g.name} Baja buggy`} draggable={false} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <div className="h-full w-full bg-surface-2" />}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5"><p className="text-xs uppercase tracking-[0.25em] text-primary">{g.year}</p><h3 className="mt-1 text-3xl">{g.name}</h3></div>
           </Link>)}
@@ -94,7 +107,7 @@ function Home() {
 
       {sponsors.length > 0 && <section className="overflow-hidden border-y border-border bg-surface py-12"><Reveal className="section-x mx-auto max-w-7xl"><h2 className="text-3xl">Backed <span className="text-primary">by</span></h2></Reveal><div className="mt-8 overflow-hidden"><div className={`flex w-max gap-4 px-4 ${sponsors.length > 1 ? "sponsor-marquee" : "mx-auto"}`}>{marqueeSponsors.map((s: Row, i: number) => <div key={`${s.id}-${i}`} className="flex h-24 w-52 shrink-0 items-center justify-center rounded bg-foreground p-5">{s.logo_url ? <img src={s.logo_url} alt={s.name} loading="lazy" decoding="async" className="max-h-14 max-w-full object-contain" /> : <span className="font-display text-background">{s.name}</span>}</div>)}</div></div></section>}
 
-      <section className="relative min-h-[28rem] overflow-hidden"><img src={`${mediaBase}/site/team_photo.webp`} alt="Team Saksham International crew" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover" /><div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/40 to-transparent" /><div className="section-x relative mx-auto flex min-h-[28rem] max-w-7xl items-center"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">One team. One machine.</p><h2 className="mt-3 max-w-lg text-5xl leading-[0.9] md:text-7xl">Meet the crew</h2><Link to="/team" className="mt-7 inline-flex items-center gap-2 rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground">OUR TEAM <ArrowRight className="h-4 w-4" /></Link></Reveal></div></section>
+      <section className="relative min-h-[28rem] overflow-hidden md:aspect-[16/9] md:max-h-[92vh] md:min-h-0"><img src={`${mediaBase}/site/team_photo.webp`} alt="Team Saksham International crew" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[center_20%]" /><div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" /><div className="section-x relative mx-auto flex h-full min-h-[28rem] max-w-7xl items-end pb-12 md:min-h-0"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">One team. One machine.</p><h2 className="mt-3 max-w-lg text-5xl leading-[0.9] md:text-7xl">Meet the crew</h2><Link to="/team" className="mt-7 inline-flex items-center gap-2 rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground">OUR TEAM <ArrowRight className="h-4 w-4" /></Link></Reveal></div></section>
     </div>
   );
 }

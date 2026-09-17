@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { content, listQuery, pageContentQuery, type Row } from "@/lib/db";
+import { preloadQueries } from "@/lib/preload";
 
 const MEDIA = "https://cazhbqmbtlvqcahgyvba.supabase.co/storage/v1/object/public/media";
 
@@ -22,8 +23,19 @@ export const Route = createFileRoute("/about")({
       },
     ],
   }),
-  component: About,
+  loader: ({ context }) =>
+    preloadQueries(context.queryClient, [pageContentQuery, listQuery("subteams")]),
+  component: AboutPage,
 });
+
+function AboutPage() {
+  const state = Route.useLoaderData();
+  return (
+    <HydrationBoundary state={state}>
+      <About />
+    </HydrationBoundary>
+  );
+}
 
 function About() {
   const { data: cms } = useQuery(pageContentQuery);

@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAdminSession } from "@/hooks/useAdminSession";
 import { CrudSection, type Field } from "@/components/admin/CrudSection";
 import { AlumniNetwork, usePendingAlumniCount } from "@/components/admin/AlumniNetwork";
+import { GraduateMembers } from "@/components/admin/GraduateMembers";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -28,6 +29,8 @@ const sections: {
   description?: string;
   labelField?: string;
   groupBy?: string;
+  orderBy?: string;
+  sortable?: boolean;
   fields: Field[];
 }[] = [
   {
@@ -175,8 +178,10 @@ const sections: {
     table: "page_content",
     title: "Page text",
     description:
-      "Editable text blocks for the site, e.g. home_title_line1, home_subtitle, about_mission, sponsors_cta, contact_email.",
+      "Text shown on the public pages. Edit a value to change it on the site; leave it empty to use the built-in default. home_hero_image takes an image link (upload a photo under Gallery photos and copy its link).",
     labelField: "key",
+    orderBy: "key",
+    sortable: false,
     fields: [
       { name: "key", label: "Key", required: true, placeholder: "home_subtitle" },
       { name: "value", label: "Text", type: "textarea" },
@@ -189,6 +194,8 @@ const sections: {
     title: "Admins",
     description: "Only these email addresses can sign in and manage content.",
     labelField: "email",
+    orderBy: "email",
+    sortable: false,
     fields: [{ name: "email", label: "Email", required: true }],
   },
 ];
@@ -285,6 +292,7 @@ function Admin() {
       </div>
 
       <div className="mt-8">
+        {active.key === "members" && <GraduateMembers />}
         {active.key === "network" ? (
           <AlumniNetwork />
         ) : (
@@ -296,6 +304,8 @@ function Admin() {
           fields={active.fields}
           labelField={active.labelField}
           groupBy={active.groupBy}
+          orderBy={active.orderBy}
+          sortable={active.sortable}
         />
         )}
       </div>

@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { Trophy } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { listQuery, type Row } from "@/lib/db";
+import { preloadQueries } from "@/lib/preload";
 
 export const Route = createFileRoute("/achievements")({
   head: () => ({
@@ -21,8 +22,19 @@ export const Route = createFileRoute("/achievements")({
       },
     ],
   }),
-  component: Achievements,
+  loader: ({ context }) =>
+    preloadQueries(context.queryClient, [listQuery("achievements")]),
+  component: AchievementsPage,
 });
+
+function AchievementsPage() {
+  const state = Route.useLoaderData();
+  return (
+    <HydrationBoundary state={state}>
+      <Achievements />
+    </HydrationBoundary>
+  );
+}
 
 function Achievements() {
   const { data: items = [], isLoading } = useQuery(listQuery("achievements"));

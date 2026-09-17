@@ -4,6 +4,7 @@ import { ArrowDown, ArrowUp, Pencil, Plus, Trash2, X } from "lucide-react";
 import { toast } from "sonner";
 import { db, fetchList, listQuery, type Row } from "@/lib/db";
 import { uploadImage } from "@/lib/upload";
+import { Thumb } from "@/components/Thumb";
 
 export type FieldType = "text" | "textarea" | "number" | "image" | "checkbox" | "select" | "date";
 
@@ -27,6 +28,12 @@ type Props = {
   labelField?: string | undefined;
   /** Column used to group the list (usually a foreign key). */
   groupBy?: string | undefined;
+  /** Column to order by. Defaults to sort_order. */
+  orderBy?: string | undefined;
+  /** Whether rows can be reordered (the table has a sort_order column). */
+  sortable?: boolean | undefined;
+  /** Extra per-row buttons. */
+  rowActions?: ((row: Row) => React.ReactNode) | undefined;
 };
 
 function emptyDraft(fields: Field[]): Row {
@@ -42,9 +49,14 @@ export function CrudSection({
   fields,
   labelField = "name",
   groupBy,
+  orderBy,
+  sortable = true,
+  rowActions,
 }: Props) {
   const qc = useQueryClient();
-  const { data: rows = [], isLoading } = useQuery(listQuery(table));
+  const { data: rows = [], isLoading, error } = useQuery(
+    listQuery(table, orderBy ? { order: orderBy } : {}),
+  );
   const [editing, setEditing] = useState<Row | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -87,7 +99,7 @@ export function CrudSection({
       ? await db.from(table).update(payload).eq("id", id)
       : await db
           .from(table)
-          .insert({ ...payload, sort_order: rows.length });
+          .insert(sortable ? { ...payload, sort_order: rows.length } : payload);
     setBusy(false);
     if (res.error) {
       toast.error(res.error.message);
@@ -161,6 +173,10 @@ export function CrudSection({
 
       {isLoading ? (
         <p className="mt-6 text-sm text-muted-foreground">Loading…</p>
+      ) : error ? (
+        <p className="mt-6 text-sm text-destructive">
+          Couldn't load this list: {(error as Error).message}
+        </p>
       ) : rows.length === 0 ? (
         <p className="mt-6 text-sm text-muted-foreground">Nothing here yet.</p>
       ) : (
@@ -171,7 +187,7 @@ export function CrudSection({
               className="flex items-center gap-3 rounded border border-border bg-surface p-3"
             >
               {(row.photo_url || row.image_url || row.logo_url || row.cover_image_url) && (
-                <img
+                <Thumb
                   src={row.photo_url || row.image_url || row.logo_url || row.cover_image_url}
                   alt=""
                   className="h-12 w-12 shrink-0 rounded object-cover"
@@ -197,6 +213,9 @@ export function CrudSection({
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-1">
+                {rowActions?.(row)}
+                {sortable && (
+                  <>
                 <button
                   aria-label="Move up"
                   onClick={() => move(row, -1)}
@@ -211,6 +230,8 @@ export function CrudSection({
                 >
                   <ArrowDown className="h-4 w-4" />
                 </button>
+                  </>
+                )}
                 <button
                   aria-label="Edit"
                   onClick={() => setEditing({ ...row })}

@@ -5,8 +5,9 @@ import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Camera, Check, Loader2, Mail, Search } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { db, type Row } from "@/lib/db";
-import { compressToWebp } from "@/lib/upload";
+import { compressToWebp, uploadThumbnail } from "@/lib/upload";
 import { COUNTRIES, INDUSTRIES, initials, isLinkedInUrl, normaliseLinkedIn } from "@/lib/alumni";
+import { Thumb } from "@/components/Thumb";
 
 export const Route = createFileRoute("/alumni_/join")({
   head: () => ({
@@ -818,7 +819,7 @@ function ClaimStep({ onPick, onSkip }: { onPick: (a: Row) => void; onSkip: () =>
                 className="flex w-full items-center gap-3 p-3 text-left hover:bg-surface"
               >
                 {p.photo_url ? (
-                  <img src={p.photo_url} alt="" className="h-10 w-10 rounded-full object-cover" />
+                  <Thumb src={p.photo_url} alt="" className="h-10 w-10 rounded-full object-cover" />
                 ) : (
                   <span className="flex h-10 w-10 items-center justify-center rounded-full bg-surface-2 font-display text-primary">
                     {initials(p.name)}
@@ -871,6 +872,7 @@ function PhotoPicker({
         .from("media")
         .upload(path, webp, { contentType: "image/webp", upsert: false });
       if (error) throw error;
+      await uploadThumbnail(file, path, 480);
       onUploaded(supabase.storage.from("media").getPublicUrl(path).data.publicUrl);
     } catch (err) {
       console.error(err);

@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Linkedin, Mail, MapPin, Search, X } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { alumniDirectoryQuery, initials, type AlumniProfile } from "@/lib/alumni";
 import type { Row } from "@/lib/db";
+import { preloadQueries } from "@/lib/preload";
+import { Thumb } from "@/components/Thumb";
 
 export const Route = createFileRoute("/alumni")({
   head: () => ({
@@ -24,8 +26,18 @@ export const Route = createFileRoute("/alumni")({
       { property: "og:image", content: "/og-image.jpg" },
     ],
   }),
-  component: Alumni,
+  loader: ({ context }) => preloadQueries(context.queryClient, [alumniDirectoryQuery]),
+  component: AlumniPage,
 });
+
+function AlumniPage() {
+  const state = Route.useLoaderData();
+  return (
+    <HydrationBoundary state={state}>
+      <Alumni />
+    </HydrationBoundary>
+  );
+}
 
 type GroupMode = "car" | "year";
 
@@ -249,11 +261,9 @@ function Chip({
 
 function Avatar({ a, size }: { a: AlumniProfile; size: string }) {
   return a.photo_url ? (
-    <img
+    <Thumb
       src={a.photo_url}
       alt={a.name}
-      loading="lazy"
-      decoding="async"
       className={`${size} shrink-0 rounded-full object-cover ring-2 ring-border transition-all group-hover:ring-primary`}
     />
   ) : (

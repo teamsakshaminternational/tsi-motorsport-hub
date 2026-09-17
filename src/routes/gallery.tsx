@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { Lightbox } from "@/components/Lightbox";
 import { listQuery, type Row } from "@/lib/db";
+import { preloadQueries } from "@/lib/preload";
+import { Thumb } from "@/components/Thumb";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -22,8 +24,19 @@ export const Route = createFileRoute("/gallery")({
       },
     ],
   }),
-  component: Gallery,
+  loader: ({ context }) =>
+    preloadQueries(context.queryClient, [listQuery("generations"), listQuery("generation_photos")]),
+  component: GalleryPage,
 });
+
+function GalleryPage() {
+  const state = Route.useLoaderData();
+  return (
+    <HydrationBoundary state={state}>
+      <Gallery />
+    </HydrationBoundary>
+  );
+}
 
 function Gallery() {
   const { data: generations = [], isLoading } = useQuery(listQuery("generations"));
@@ -117,11 +130,9 @@ function Gallery() {
                         className="group block w-full break-inside-avoid overflow-hidden rounded border border-border bg-surface"
                         aria-label={p.caption ?? `Open photo ${i + 1} of ${g.name}`}
                       >
-                        <img
+                        <Thumb
                           src={p.image_url}
                           alt={p.caption ?? `${g.name} photo ${i + 1}`}
-                          loading="lazy"
-                          decoding="async"
                           className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />
                       </button>

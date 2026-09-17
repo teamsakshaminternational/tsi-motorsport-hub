@@ -5,6 +5,7 @@ import { Check, Download, EyeOff, Linkedin, MessageCircle, Search, Trash2 } from
 import { supabase } from "@/integrations/supabase/client";
 import { db, type Row } from "@/lib/db";
 import { downloadCsv, initials, whatsappNumber } from "@/lib/alumni";
+import { Thumb } from "@/components/Thumb";
 
 type View = "requests" | "directory" | "outreach";
 
@@ -115,7 +116,7 @@ export function AlumniNetwork() {
 
 function Face({ row, size = "h-14 w-14" }: { row: Row; size?: string }) {
   return row.photo_url ? (
-    <img src={row.photo_url} alt="" className={`${size} shrink-0 rounded-full object-cover`} />
+    <Thumb src={row.photo_url} alt="" className={`${size} shrink-0 rounded-full object-cover`} />
   ) : (
     <span
       className={`${size} flex shrink-0 items-center justify-center rounded-full bg-surface-2 font-display text-primary`}
@@ -517,13 +518,13 @@ function Outreach({ data, onChange }: { data: NetworkData; onChange: () => void 
 
   const joinLink = typeof window === "undefined" ? "" : `${window.location.origin}/alumni/join`;
 
-  async function invite(o: Row) {
+  function inviteLink(o: Row) {
     const first = String(o.name).split(" ")[0];
     const text = `Hi ${first}! This is Team Saksham International. We're building an alumni wall on our new website so current students can see where TSI alumni are now. Could you add yourself? It takes 2 minutes: ${joinLink}`;
-    window.open(
-      `https://wa.me/${whatsappNumber(o.phone)}?text=${encodeURIComponent(text)}`,
-      "_blank",
-    );
+    return `https://api.whatsapp.com/send?phone=${whatsappNumber(o.phone)}&text=${encodeURIComponent(text)}`;
+  }
+
+  async function markInvited(o: Row) {
     const { error } = await db
       .from("alumni_outreach")
       .update({ invited_at: new Date().toISOString() })
@@ -615,17 +616,21 @@ function Outreach({ data, onChange }: { data: NetworkData; onChange: () => void 
                 <td className="p-3 text-xs">{o.phone}</td>
                 <td className="p-3">
                   {o.phone ? (
-                    <button
-                      onClick={() => void invite(o)}
+                    <a
+                      href={inviteLink(o)}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={() => void markInvited(o)}
+                      title="Opens WhatsApp with the invite message ready to send"
                       className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 font-display text-[11px] tracking-widest ${
                         o.invited_at
-                          ? "border border-border text-muted-foreground"
+                          ? "border border-border text-muted-foreground hover:border-primary"
                           : "bg-[#25D366] text-black"
                       }`}
                     >
                       <MessageCircle className="h-3.5 w-3.5" />
-                      {o.invited_at ? "SENT · RESEND" : "WHATSAPP"}
-                    </button>
+                      {o.invited_at ? "INVITED · AGAIN" : "WHATSAPP"}
+                    </a>
                   ) : (
                     <span className="text-xs text-muted-foreground">no phone</span>
                   )}

@@ -1,9 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { listQuery, type Row } from "@/lib/db";
+import { preloadQueries } from "@/lib/preload";
+import { Thumb } from "@/components/Thumb";
 
 export const Route = createFileRoute("/team")({
   head: () => ({
@@ -21,8 +23,19 @@ export const Route = createFileRoute("/team")({
       },
     ],
   }),
-  component: Team,
+  loader: ({ context }) =>
+    preloadQueries(context.queryClient, [listQuery("subteams"), listQuery("members")]),
+  component: TeamPage,
 });
+
+function TeamPage() {
+  const state = Route.useLoaderData();
+  return (
+    <HydrationBoundary state={state}>
+      <Team />
+    </HydrationBoundary>
+  );
+}
 
 function initials(name: unknown) {
   return String(name ?? "?")
@@ -37,10 +50,9 @@ function MemberCard({ m }: { m: Row }) {
   return (
     <div className="group h-full overflow-hidden rounded border border-border bg-surface transition-colors hover:border-primary">
       {m.photo_url ? (
-        <img
+        <Thumb
           src={m.photo_url}
           alt={m.name}
-          loading="lazy"
           className="aspect-3/4 w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (

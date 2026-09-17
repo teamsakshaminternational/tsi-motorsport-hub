@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { NewsletterForm } from "@/components/NewsletterForm";
 import { content, listQuery, pageContentQuery, type Row } from "@/lib/db";
+import { preloadQueries } from "@/lib/preload";
 
 export const Route = createFileRoute("/sponsors")({
   head: () => ({
@@ -21,8 +22,19 @@ export const Route = createFileRoute("/sponsors")({
       },
     ],
   }),
-  component: Sponsors,
+  loader: ({ context }) =>
+    preloadQueries(context.queryClient, [listQuery("sponsors"), pageContentQuery]),
+  component: SponsorsPage,
 });
+
+function SponsorsPage() {
+  const state = Route.useLoaderData();
+  return (
+    <HydrationBoundary state={state}>
+      <Sponsors />
+    </HydrationBoundary>
+  );
+}
 
 function Sponsors() {
   const { data: sponsors = [], isLoading } = useQuery(listQuery("sponsors"));
