@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HydrationBoundary, useQuery } from "@tanstack/react-query";
-import { ArrowRight } from "lucide-react";
-import { useRef } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRef, useState } from "react";
 import { CountUp } from "@/components/CountUp";
 import { Reveal } from "@/components/Reveal";
 import { content, listQuery, pageContentQuery, type Row } from "@/lib/db";
@@ -42,7 +42,25 @@ function Home() {
   const { data: sponsors = [] } = useQuery(listQuery("sponsors"));
   const { data: alumni = [] } = useQuery(listQuery("alumni"));
   const stripRef = useRef<HTMLDivElement>(null);
-  const drag = useRef({ active: false, start: 0, scroll: 0 });
+  const drag = useRef({ active: false, start: 0, scroll: 0, moved: false });
+  const justDragged = useRef(false);
+  const [dragging, setDragging] = useState(false);
+
+  function endDrag() {
+    if (drag.current.moved) {
+      justDragged.current = true;
+      // Let the browser snap to the nearest card again.
+      requestAnimationFrame(() => setDragging(false));
+    }
+    drag.current.active = false;
+    drag.current.moved = false;
+  }
+
+  function scrollStrip(direction: 1 | -1) {
+    const node = stripRef.current;
+    if (!node) return;
+    node.scrollBy({ left: direction * node.clientWidth * 0.8, behavior: "smooth" });
+  }
 
   const heroImage = content(cms, "home_hero_image", "") || "/hero-buggy.webp";
   const marqueeSponsors = sponsors.length > 1 ? [...sponsors, ...sponsors] : sponsors;
@@ -85,10 +103,40 @@ function Home() {
       </section>
 
       {generations.length > 0 && <section className="py-16 md:py-24">
-        <div className="section-x mx-auto flex max-w-7xl items-end justify-between gap-4"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">Built generation by generation</p><h2 className="mt-3 text-4xl md:text-6xl">The machines</h2></Reveal><span className="hidden text-xs uppercase tracking-widest text-muted-foreground sm:block">Drag to explore</span></div>
-        <div ref={stripRef} className="hide-scrollbar mt-9 flex cursor-grab snap-x snap-mandatory gap-4 overflow-x-auto px-5 active:cursor-grabbing md:px-10 xl:px-[max(4rem,calc((100vw-80rem)/2))]" onPointerDown={(e) => { const node = stripRef.current; if (!node) return; drag.current = { active: true, start: e.clientX, scroll: node.scrollLeft }; node.setPointerCapture(e.pointerId); }} onPointerMove={(e) => { const node = stripRef.current; if (!node || !drag.current.active) return; node.scrollLeft = drag.current.scroll - (e.clientX - drag.current.start); }} onPointerUp={() => { drag.current.active = false; }} onPointerCancel={() => { drag.current.active = false; }}>
-          {generations.map((g: Row) => <Link key={g.id} to="/gallery" hash={g.id} className="group relative block aspect-[4/5] w-[78vw] max-w-sm shrink-0 snap-start overflow-hidden rounded border border-border bg-surface sm:w-[42vw] lg:w-[28vw]">
-            {g.cover_image_url ? <Thumb src={g.cover_image_url} alt={`${g.name} Baja buggy`} draggable={false} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <div className="h-full w-full bg-surface-2" />}
+        <div className="section-x mx-auto flex max-w-7xl items-end justify-between gap-4"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">Built generation by generation</p><h2 className="mt-3 text-4xl md:text-6xl">The machines</h2></Reveal><div className="flex items-center gap-3"><span className="hidden text-xs uppercase tracking-widest text-muted-foreground sm:block">Drag or use arrows</span><button type="button" onClick={() => scrollStrip(-1)} aria-label="Previous cars" className="rounded-full border border-border p-2.5 transition-colors hover:border-primary hover:text-primary"><ArrowLeft className="h-4 w-4" /></button><button type="button" onClick={() => scrollStrip(1)} aria-label="Next cars" className="rounded-full border border-border p-2.5 transition-colors hover:border-primary hover:text-primary"><ArrowRight className="h-4 w-4" /></button></div></div>
+        <div
+          ref={stripRef}
+          className={`hide-scrollbar mt-9 flex cursor-grab select-none gap-4 overflow-x-auto px-5 md:px-10 xl:px-[max(4rem,calc((100vw-80rem)/2))] ${dragging ? "cursor-grabbing" : "snap-x snap-mandatory"}`}
+          onDragStart={(e) => e.preventDefault()}
+          onPointerDown={(e) => {
+            const node = stripRef.current;
+            justDragged.current = false;
+            if (!node || e.pointerType !== "mouse" || e.button !== 0) return;
+            drag.current = { active: true, start: e.clientX, scroll: node.scrollLeft, moved: false };
+          }}
+          onPointerMove={(e) => {
+            const node = stripRef.current;
+            if (!node || !drag.current.active) return;
+            const dx = e.clientX - drag.current.start;
+            if (!drag.current.moved && Math.abs(dx) > 6) {
+              drag.current.moved = true;
+              setDragging(true);
+              node.setPointerCapture(e.pointerId);
+            }
+            if (drag.current.moved) node.scrollLeft = drag.current.scroll - dx;
+          }}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onClickCapture={(e) => {
+            if (justDragged.current) {
+              e.preventDefault();
+              e.stopPropagation();
+              justDragged.current = false;
+            }
+          }}
+        >
+          {generations.map((g: Row) => <Link key={g.id} to="/gallery" hash={g.id} draggable={false} className="group relative block aspect-[4/5] w-[78vw] max-w-sm shrink-0 snap-start overflow-hidden rounded border border-border bg-surface sm:w-[42vw] lg:w-[28vw]">
+            {g.cover_image_url ? <Thumb src={g.cover_image_url} hiRes sizes="(min-width: 1024px) 28vw, (min-width: 640px) 42vw, 78vw" alt={`${g.name} Baja buggy`} draggable={false} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" /> : <div className="h-full w-full bg-surface-2" />}
             <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
             <div className="absolute inset-x-0 bottom-0 p-5"><p className="text-xs uppercase tracking-[0.25em] text-primary">{g.year}</p><h3 className="mt-1 text-3xl">{g.name}</h3></div>
           </Link>)}
@@ -110,4 +158,4 @@ function Home() {
       <section className="relative h-[28rem] overflow-hidden md:h-[min(56.25vw,90vh)]"><img src={content(cms, "home_crew_image", `${mediaBase}/site/team_photo.webp`)} alt="Team Saksham International crew" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[center_20%]" /><div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" /><div className="section-x relative mx-auto flex h-full min-h-[28rem] max-w-7xl items-end pb-12 md:min-h-0"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">One team. One machine.</p><h2 className="mt-3 max-w-lg text-5xl leading-[0.9] md:text-7xl">Meet the crew</h2><Link to="/team" className="mt-7 inline-flex items-center gap-2 rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground">OUR TEAM <ArrowRight className="h-4 w-4" /></Link></Reveal></div></section>
     </div>
   );
-}
+}

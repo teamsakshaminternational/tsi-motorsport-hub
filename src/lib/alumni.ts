@@ -68,8 +68,17 @@ export function isLinkedInUrl(value: string) {
 }
 
 /** Gmail compose link — works on any device, unlike mailto: which needs a mail app set up. */
-export function gmailCompose(email: string) {
-  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`;
+export function gmailCompose(email: string, subject?: string) {
+  const su = subject ? `&su=${encodeURIComponent(subject)}` : "";
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}${su}`;
+}
+
+/** "www.site.com" -> "https://www.site.com" so it doesn't open as a page on our own site. */
+export function externalUrl(value: unknown) {
+  const v = String(value ?? "").trim();
+  if (!v) return "";
+  if (/^(https?:|mailto:|tel:)/i.test(v)) return v;
+  return `https://${v.replace(/^\/+/, "")}`;
 }
 
 export function whatsappNumber(phone: unknown) {

@@ -9,7 +9,15 @@ export function thumbUrl(url: string | null | undefined) {
 }
 
 /** <img> that loads the small copy first and falls back to the original if it's missing. */
-export function Thumb({ src, ...props }: ImgHTMLAttributes<HTMLImageElement> & { src: string }) {
+export function Thumb({
+  src,
+  hiRes,
+  ...props
+}: ImgHTMLAttributes<HTMLImageElement> & {
+  src: string;
+  /** Let the browser pick the full-size photo when the image is shown large (needs `sizes`). */
+  hiRes?: boolean;
+}) {
   const small = thumbUrl(src);
   const [failed, setFailed] = useState(false);
   const ref = useRef<HTMLImageElement>(null);
@@ -31,6 +39,7 @@ export function Thumb({ src, ...props }: ImgHTMLAttributes<HTMLImageElement> & {
       decoding="async"
       {...props}
       src={failed ? src : small}
+      srcSet={hiRes && !failed && small !== src ? `${small} 480w, ${src} 1800w` : undefined}
       onError={() => {
         if (!failed && small !== src) setFailed(true);
       }}

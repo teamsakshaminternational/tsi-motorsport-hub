@@ -174,6 +174,18 @@ const sections: {
     ],
   },
   {
+    key: "subscribers",
+    label: "Subscribers",
+    table: "newsletter_subscribers",
+    title: "Newsletter subscribers",
+    description:
+      "People who signed up with the Subscribe box in the site footer. Nobody is emailed automatically: copy these addresses when you send an update.",
+    labelField: "email",
+    orderBy: "created_at",
+    sortable: false,
+    fields: [{ name: "email", label: "Email", required: true }],
+  },
+  {
     key: "images",
     label: "Site images",
     table: "",

@@ -19,7 +19,7 @@ export function PageHeader({
               {eyebrow}
             </p>
           )}
-          <h1 className="max-w-4xl text-5xl leading-[0.9] md:text-7xl">{title}</h1>
+          <h1 className="max-w-4xl text-[2.6rem] leading-[0.9] [overflow-wrap:anywhere] sm:text-5xl md:text-7xl">{title}</h1>
           {children && (
             <div className="mt-4 max-w-2xl text-base text-muted-foreground">{children}</div>
           )}

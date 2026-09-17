@@ -132,6 +132,8 @@ function Gallery() {
                       >
                         <Thumb
                           src={p.image_url}
+                          hiRes
+                          sizes="(min-width: 1024px) 25vw, (min-width: 768px) 33vw, 50vw"
                           alt={p.caption ?? `${g.name} photo ${i + 1}`}
                           className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
                         />

@@ -2,7 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
-import { NewsletterForm } from "@/components/NewsletterForm";
+import { Copy, Mail } from "lucide-react";
+import { toast } from "sonner";
+import { externalUrl, gmailCompose } from "@/lib/alumni";
 import { content, listQuery, pageContentQuery, type Row } from "@/lib/db";
 import { preloadQueries } from "@/lib/preload";
 
@@ -39,6 +41,7 @@ function SponsorsPage() {
 function Sponsors() {
   const { data: sponsors = [], isLoading } = useQuery(listQuery("sponsors"));
   const { data: cms } = useQuery(pageContentQuery);
+  const sponsorEmail = content(cms, "contact_email", "teamsakshaminternational@gmail.com");
 
   const tiers = sponsors.reduce((acc: Record<string, Row[]>, s: Row) => {
     (acc[s.tier || "Partners"] ??= []).push(s);
@@ -72,7 +75,7 @@ function Sponsors() {
               {(list as Row[]).map((s: Row, i: number) => (
                 <Reveal key={s.id} delay={Math.min(i, 8) * 60}>
                   <a
-                    href={s.website_url || "#"}
+                    href={externalUrl(s.website_url) || undefined}
                     target={s.website_url ? "_blank" : undefined}
                     rel="noreferrer"
                     className="flex h-32 items-center justify-center rounded border border-border bg-surface p-5 transition-colors hover:border-primary"
@@ -107,10 +110,28 @@ function Sponsors() {
               )}
             </p>
             <p className="mt-4 font-display text-lg text-primary">
-              {content(cms, "contact_email", "teamsakshaminternational@gmail.com")}
+              {sponsorEmail}
             </p>
-            <div className="mt-6">
-              <NewsletterForm />
+            <div className="mt-6 flex flex-wrap gap-3">
+              <a
+                href={gmailCompose(sponsorEmail, "Sponsorship enquiry - Team Saksham International")}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-2 rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground"
+              >
+                <Mail className="h-4 w-4" /> EMAIL US
+              </a>
+              <button
+                type="button"
+                onClick={() => {
+                  void navigator.clipboard
+                    .writeText(sponsorEmail)
+                    .then(() => toast.success("Email address copied"));
+                }}
+                className="inline-flex items-center gap-2 rounded border border-border px-6 py-3 font-display text-sm tracking-widest hover:border-primary hover:text-primary"
+              >
+                <Copy className="h-4 w-4" /> COPY ADDRESS
+              </button>
             </div>
           </div>
         </Reveal>

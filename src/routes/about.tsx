@@ -129,16 +129,16 @@ function About() {
         )}
       </section>
 
-      <section className="relative min-h-[26rem] overflow-hidden border-t border-border">
+      <section className="relative h-[28rem] overflow-hidden border-t border-border md:h-[min(56.25vw,90vh)]">
         <img
           src={content(cms, "about_team_image", `${MEDIA}/site/team_photo.webp`)}
           alt="Team Saksham International with their buggy"
           loading="lazy"
           decoding="async"
-          className="absolute inset-0 h-full w-full object-cover"
+          className="absolute inset-0 h-full w-full object-cover object-[center_20%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
-        <div className="section-x relative mx-auto flex min-h-[26rem] max-w-7xl items-end pb-10">
+        <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" />
+        <div className="section-x relative mx-auto flex h-full max-w-7xl items-end pb-10">
           <Reveal>
             <h2 className="text-4xl md:text-6xl">
               One team. <span className="text-primary">One machine.</span>

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Check, Copy, Linkedin, Mail, MapPin, Search, X } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
-import { alumniDirectoryQuery, gmailCompose, initials, type AlumniProfile } from "@/lib/alumni";
+import { alumniDirectoryQuery, externalUrl, gmailCompose, initials, type AlumniProfile } from "@/lib/alumni";
 import type { Row } from "@/lib/db";
 import { preloadQueries } from "@/lib/preload";
 import { Thumb } from "@/components/Thumb";
@@ -325,7 +325,7 @@ function AlumniCard({
           <span className="ml-auto flex gap-2">
             {a.linkedin_url && (
               <a
-                href={a.linkedin_url}
+                href={externalUrl(a.linkedin_url)}
                 target="_blank"
                 rel="noreferrer"
                 aria-label={`${a.name} on LinkedIn`}
@@ -441,7 +441,7 @@ function ProfileDialog({
         <div className="mt-6 flex flex-wrap gap-3">
           {a.linkedin_url && (
             <a
-              href={a.linkedin_url}
+              href={externalUrl(a.linkedin_url)}
               target="_blank"
               rel="noreferrer"
               className="inline-flex items-center gap-2 rounded bg-primary px-4 py-2 font-display text-xs tracking-widest text-primary-foreground"
