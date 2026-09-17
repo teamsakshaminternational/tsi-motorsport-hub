@@ -41,6 +41,9 @@ export function SiteFooter() {
             <Link to="/blog" className="hover:text-primary">
               Blog
             </Link>
+            <Link to="/alumni/join" className="text-primary hover:underline">
+              Join the alumni network
+            </Link>
             <Link to="/admin" className="hover:text-primary">
               Admin
             </Link>

@@ -1,8 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import { content, listQuery, pageContentQuery, type Row } from "@/lib/db";
+
+const MEDIA = "https://cazhbqmbtlvqcahgyvba.supabase.co/storage/v1/object/public/media";
 
 export const Route = createFileRoute("/about")({
   head: () => ({
@@ -33,9 +35,36 @@ function About() {
         {content(
           cms,
           "about_intro",
-          "Team Saksham International (TSI) is the Baja SAE team of Vellore Institute of Technology, Chennai. Every season a new group of students takes a blank sheet and turns it into a competition-ready single-seat off-road vehicle.",
+          "The official BAJA SAE team of VIT Chennai. Every season a new group of students takes a blank sheet and turns it into a competition-ready single-seat off-road vehicle.",
         )}
       </PageHeader>
+
+      <section className="section-x mx-auto max-w-7xl pt-16 md:pt-24">
+        <div className="grid items-center gap-10 lg:grid-cols-2">
+          <Reveal>
+            <p className="text-xs uppercase tracking-[0.3em] text-primary">Since 2012</p>
+            <h2 className="mt-3 text-4xl md:text-5xl">
+              Born from <span className="text-primary">two students</span>
+            </h2>
+            <p className="mt-5 whitespace-pre-line leading-relaxed text-muted-foreground">
+              {content(
+                cms,
+                "about_body",
+                "Team Saksham International is the official BAJA SAE team of VIT University Chennai. Every year, we design and manufacture an All-Terrain Vehicle and compete in national and international BAJA racing events.\n\nBorn in 2012 as the brainchild of two engineering students, TSI brings together engineers passionate about designing, analysing, manufacturing and marketing all-terrain vehicles. It is the synchronised work of our departments, towards one race car, that sets the team apart.",
+              )}
+            </p>
+          </Reveal>
+          <Reveal delay={120}>
+            <img
+              src={`${MEDIA}/site/band2.webp`}
+              alt="Team Saksham International buggy in the workshop"
+              loading="lazy"
+              decoding="async"
+              className="aspect-4/3 w-full rounded border border-border object-cover"
+            />
+          </Reveal>
+        </div>
+      </section>
 
       <section className="section-x mx-auto max-w-7xl py-16 md:py-24">
         <div className="grid gap-10 md:grid-cols-2">
@@ -86,6 +115,30 @@ function About() {
             </div>
           </div>
         )}
+      </section>
+
+      <section className="relative min-h-[26rem] overflow-hidden border-t border-border">
+        <img
+          src={`${MEDIA}/site/team_photo.webp`}
+          alt="Team Saksham International with their buggy"
+          loading="lazy"
+          decoding="async"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+        <div className="section-x relative mx-auto flex min-h-[26rem] max-w-7xl items-end pb-10">
+          <Reveal>
+            <h2 className="text-4xl md:text-6xl">
+              One team. <span className="text-primary">One machine.</span>
+            </h2>
+            <Link
+              to="/alumni/join"
+              className="mt-5 inline-flex rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground"
+            >
+              TSI ALUMNI? JOIN THE NETWORK
+            </Link>
+          </Reveal>
+        </div>
       </section>
     </div>
   );

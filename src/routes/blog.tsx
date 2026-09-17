@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useChildMatches } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
@@ -24,6 +24,12 @@ export const Route = createFileRoute("/blog")({
 });
 
 function Blog() {
+  const childMatches = useChildMatches();
+  if (childMatches.length > 0) return <Outlet />;
+  return <BlogList />;
+}
+
+function BlogList() {
   const { data: posts = [], isLoading } = useQuery(
     listQuery("blog_posts", { order: "sort_order", filters: { published: true } }),
   );

@@ -5,6 +5,7 @@ import { LogOut } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAdminSession } from "@/hooks/useAdminSession";
 import { CrudSection, type Field } from "@/components/admin/CrudSection";
+import { AlumniNetwork, usePendingAlumniCount } from "@/components/admin/AlumniNetwork";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -29,6 +30,13 @@ const sections: {
   groupBy?: string;
   fields: Field[];
 }[] = [
+  {
+    key: "network",
+    label: "Alumni network",
+    table: "",
+    title: "",
+    fields: [],
+  },
   {
     key: "generations",
     label: "Generations",
@@ -98,13 +106,23 @@ const sections: {
     label: "Alumni",
     table: "alumni",
     title: "Alumni",
+    description:
+      "Edit alumni profiles directly. Approvals, cars, contacts and invites are in the Alumni network tab.",
     fields: [
       { name: "name", label: "Name", required: true },
-      { name: "batch_year", label: "Batch year", required: true, placeholder: "2023" },
-      { name: "position", label: "Position in team" },
-      { name: "current_role_text", label: "Currently", placeholder: "Design Engineer, Tata Motors" },
+      { name: "batch_year", label: "Batch (shown when no graduation year)", required: true, placeholder: "2023" },
+      { name: "graduation_year", label: "Graduation year", placeholder: "2023" },
+      { name: "joined_year", label: "Joined TSI", placeholder: "2019" },
+      { name: "subteam", label: "Department", placeholder: "Drivetrain" },
+      { name: "position", label: "Role in team", placeholder: "Captain" },
+      { name: "current_role_text", label: "Job title", placeholder: "Design Engineer" },
+      { name: "company", label: "Company", placeholder: "Tata Motors" },
+      { name: "industry", label: "Industry" },
+      { name: "city", label: "City" },
+      { name: "country", label: "Country" },
       { name: "photo_url", label: "Photo", type: "image" },
       { name: "linkedin_url", label: "LinkedIn URL" },
+      { name: "message", label: "Message to the team", type: "textarea" },
     ],
   },
   {
@@ -178,6 +196,7 @@ const sections: {
 function Admin() {
   const { loading, session, isAdmin } = useAdminSession();
   const [tab, setTab] = useState(sections[0]!.key);
+  const pendingAlumni = usePendingAlumniCount(isAdmin);
 
   async function signIn() {
     const { error } = await supabase.auth.signInWithOAuth({
@@ -256,11 +275,19 @@ function Admin() {
             }`}
           >
             {s.label.toUpperCase()}
+            {s.key === "network" && pendingAlumni > 0 && (
+              <span className="ml-2 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-destructive px-1.5 text-[10px] text-white">
+                {pendingAlumni}
+              </span>
+            )}
           </button>
         ))}
       </div>
 
       <div className="mt-8">
+        {active.key === "network" ? (
+          <AlumniNetwork />
+        ) : (
         <CrudSection
           key={active.key}
           table={active.table}
@@ -270,6 +297,7 @@ function Admin() {
           labelField={active.labelField}
           groupBy={active.groupBy}
         />
+        )}
       </div>
     </div>
   );

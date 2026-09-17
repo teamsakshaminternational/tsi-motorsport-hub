@@ -48,17 +48,27 @@ function Achievements() {
                 <div className="flex flex-wrap items-center gap-3">
                   <Trophy className="h-4 w-4 text-primary" />
                   <p className="font-mono text-xs uppercase tracking-widest text-primary">
-                    {[a.event, a.year].filter(Boolean).join(" · ")}
+                    {a.year}
                   </p>
                 </div>
-                <h2 className="mt-3 text-2xl">{a.title}</h2>
+                <h2 className="mt-3 text-2xl">{a.title || a.event}</h2>
                 {a.position && (
                   <p className="mt-1 font-display text-3xl text-primary">{a.position}</p>
                 )}
                 {a.description && (
-                  <p className="mt-3 whitespace-pre-line text-sm text-muted-foreground">
-                    {a.description}
-                  </p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {String(a.description)
+                      .split(/\s*[·\n]\s*/)
+                      .filter(Boolean)
+                      .map((chip: string) => (
+                        <span
+                          key={chip}
+                          className="rounded-full border border-border bg-surface-2 px-3 py-1 text-xs text-muted-foreground"
+                        >
+                          {chip}
+                        </span>
+                      ))}
+                  </div>
                 )}
                 {a.image_url && (
                   <img

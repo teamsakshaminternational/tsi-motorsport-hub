@@ -18,6 +18,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as SponsorsRouteImport } from './routes/sponsors'
 import { Route as TeamRouteImport } from './routes/team'
+import { Route as AlumniJoinRouteImport } from './routes/alumni_.join'
 import { Route as ApiKeepaliveRouteImport } from './routes/api.keepalive'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 
@@ -66,6 +67,11 @@ const TeamRoute = TeamRouteImport.update({
   path: '/team',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlumniJoinRoute = AlumniJoinRouteImport.update({
+  id: '/alumni_/join',
+  path: '/alumni/join',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiKeepaliveRoute = ApiKeepaliveRouteImport.update({
   id: '/api/keepalive',
   path: '/api/keepalive',
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/gallery': typeof GalleryRoute
   '/sponsors': typeof SponsorsRoute
   '/team': typeof TeamRoute
+  '/alumni/join': typeof AlumniJoinRoute
   '/api/keepalive': typeof ApiKeepaliveRoute
   '/blog/$slug': typeof BlogSlugRoute
 }
@@ -100,6 +107,7 @@ export interface FileRoutesByTo {
   '/gallery': typeof GalleryRoute
   '/sponsors': typeof SponsorsRoute
   '/team': typeof TeamRoute
+  '/alumni/join': typeof AlumniJoinRoute
   '/api/keepalive': typeof ApiKeepaliveRoute
   '/blog/$slug': typeof BlogSlugRoute
 }
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/gallery': typeof GalleryRoute
   '/sponsors': typeof SponsorsRoute
   '/team': typeof TeamRoute
+  '/alumni_/join': typeof AlumniJoinRoute
   '/api/keepalive': typeof ApiKeepaliveRoute
   '/blog/$slug': typeof BlogSlugRoute
 }
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/sponsors'
     | '/team'
+    | '/alumni/join'
     | '/api/keepalive'
     | '/blog/$slug'
   fileRoutesByTo: FileRoutesByTo
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/sponsors'
     | '/team'
+    | '/alumni/join'
     | '/api/keepalive'
     | '/blog/$slug'
   id:
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
     | '/gallery'
     | '/sponsors'
     | '/team'
+    | '/alumni_/join'
     | '/api/keepalive'
     | '/blog/$slug'
   fileRoutesById: FileRoutesById
@@ -169,6 +181,7 @@ export interface RootRouteChildren {
   GalleryRoute: typeof GalleryRoute
   SponsorsRoute: typeof SponsorsRoute
   TeamRoute: typeof TeamRoute
+  AlumniJoinRoute: typeof AlumniJoinRoute
   ApiKeepaliveRoute: typeof ApiKeepaliveRoute
 }
 
@@ -237,6 +250,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TeamRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/alumni_/join': {
+      id: '/alumni_/join'
+      path: '/alumni/join'
+      fullPath: '/alumni/join'
+      preLoaderRoute: typeof AlumniJoinRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/keepalive': {
       id: '/api/keepalive'
       path: '/api/keepalive'
@@ -274,6 +294,7 @@ const rootRouteChildren: RootRouteChildren = {
   GalleryRoute: GalleryRoute,
   SponsorsRoute: SponsorsRoute,
   TeamRoute: TeamRoute,
+  AlumniJoinRoute: AlumniJoinRoute,
   ApiKeepaliveRoute: ApiKeepaliveRoute,
 }
 export const routeTree = rootRouteImport

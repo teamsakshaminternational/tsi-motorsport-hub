@@ -24,19 +24,28 @@ export const Route = createFileRoute("/team")({
   component: Team,
 });
 
+function initials(name: unknown) {
+  return String(name ?? "?")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+}
+
 function MemberCard({ m }: { m: Row }) {
   return (
-    <div className="group overflow-hidden rounded border border-border bg-surface transition-colors hover:border-primary">
+    <div className="group h-full overflow-hidden rounded border border-border bg-surface transition-colors hover:border-primary">
       {m.photo_url ? (
         <img
           src={m.photo_url}
           alt={m.name}
           loading="lazy"
-          className="aspect-3/4 w-full object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+          className="aspect-3/4 w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
       ) : (
         <div className="flex aspect-3/4 items-center justify-center bg-surface-2 font-display text-4xl text-primary">
-          {String(m.name ?? "?").charAt(0)}
+          {initials(m.name)}
         </div>
       )}
       <div className="p-4">
@@ -85,7 +94,7 @@ function Team() {
               <Reveal>
                 <h2 className="border-b border-border pb-3 text-2xl md:text-4xl">
                   {s.name}
-                  <span className="ml-3 font-mono text-xs text-muted-foreground">
+                  <span className="ml-3 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-primary px-2 align-middle font-mono text-xs text-primary-foreground">
                     {list.length}
                   </span>
                 </h2>

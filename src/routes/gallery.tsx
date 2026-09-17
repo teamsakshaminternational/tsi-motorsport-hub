@@ -46,7 +46,23 @@ function Gallery() {
         Every generation of our buggy, from the first weld to the finish line.
       </PageHeader>
 
-      <div className="section-x mx-auto max-w-7xl py-16 md:py-24">
+      {generations.length > 1 && (
+        <nav className="sticky top-[4.5rem] z-30 border-b border-border bg-background/90 backdrop-blur-md">
+          <div className="hide-scrollbar section-x mx-auto flex max-w-7xl gap-2 overflow-x-auto py-3">
+            {generations.map((g: Row) => (
+              <a
+                key={g.id}
+                href={`#${g.id}`}
+                className="shrink-0 rounded-full border border-border px-4 py-1.5 font-display text-xs tracking-widest text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+              >
+                {String(g.name).toUpperCase()}
+              </a>
+            ))}
+          </div>
+        </nav>
+      )}
+
+      <div className="section-x mx-auto max-w-7xl py-12 md:py-20">
         {isLoading && <p className="text-sm text-muted-foreground">Loading…</p>}
         {!isLoading && generations.length === 0 && (
           <p className="text-sm text-muted-foreground">
@@ -54,49 +70,61 @@ function Gallery() {
           </p>
         )}
 
-        <div className="space-y-20">
-          {generations.map((g: Row) => {
+        <div className="space-y-20 md:space-y-28">
+          {generations.map((g: Row, gi: number) => {
             const gPhotos = byGeneration[g.id] ?? [];
             return (
-              <section key={g.id} id={g.id}>
+              <section key={g.id} id={g.id} className="scroll-mt-32">
                 <Reveal>
-                  <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
-                    <div>
-                      {g.year && (
+                  <div className="relative overflow-hidden rounded border border-border">
+                    {g.cover_image_url ? (
+                      <img
+                        src={g.cover_image_url}
+                        alt={`${g.name} Baja buggy`}
+                        loading={gi === 0 ? "eager" : "lazy"}
+                        decoding="async"
+                        className="aspect-[16/7] w-full object-cover"
+                      />
+                    ) : (
+                      <div className="aspect-[16/7] w-full bg-surface-2" />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
+                    <div className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-3 p-5 md:p-8">
+                      <div>
                         <p className="font-mono text-xs uppercase tracking-[0.3em] text-primary">
-                          {g.year}
+                          {g.year || `Generation ${String(gi + 1).padStart(2, "0")}`}
                         </p>
-                      )}
-                      <h2 className="mt-1 text-3xl md:text-5xl">{g.name}</h2>
+                        <h2 className="mt-1 text-4xl md:text-7xl">{g.name}</h2>
+                      </div>
+                      <span className="rounded-full bg-background/80 px-3 py-1 font-mono text-xs text-muted-foreground">
+                        {gPhotos.length} photo{gPhotos.length === 1 ? "" : "s"}
+                      </span>
                     </div>
-                    <span className="font-mono text-xs text-muted-foreground">
-                      {gPhotos.length} photo{gPhotos.length === 1 ? "" : "s"}
-                    </span>
                   </div>
                   {g.description && (
-                    <p className="mt-4 max-w-3xl text-sm text-muted-foreground">{g.description}</p>
+                    <p className="mt-5 max-w-3xl text-sm text-muted-foreground">{g.description}</p>
                   )}
                 </Reveal>
 
                 {gPhotos.length === 0 ? (
                   <p className="mt-6 text-sm text-muted-foreground">No photos yet.</p>
                 ) : (
-                  <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
+                  <div className="mt-6 columns-2 gap-3 md:columns-3 lg:columns-4 [&>*]:mb-3">
                     {gPhotos.map((p: Row, i: number) => (
-                      <Reveal key={p.id} delay={Math.min(i, 8) * 60}>
-                        <button
-                          onClick={() => setActive({ gen: g.id, index: i })}
-                          className="group block w-full overflow-hidden rounded border border-border bg-surface"
-                          aria-label={p.caption ?? `Open photo ${i + 1} of ${g.name}`}
-                        >
-                          <img
-                            src={p.image_url}
-                            alt={p.caption ?? `${g.name} photo ${i + 1}`}
-                            loading="lazy"
-                            className="aspect-4/3 w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                          />
-                        </button>
-                      </Reveal>
+                      <button
+                        key={p.id}
+                        onClick={() => setActive({ gen: g.id, index: i })}
+                        className="group block w-full break-inside-avoid overflow-hidden rounded border border-border bg-surface"
+                        aria-label={p.caption ?? `Open photo ${i + 1} of ${g.name}`}
+                      >
+                        <img
+                          src={p.image_url}
+                          alt={p.caption ?? `${g.name} photo ${i + 1}`}
+                          loading="lazy"
+                          decoding="async"
+                          className="w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        />
+                      </button>
                     ))}
                   </div>
                 )}
