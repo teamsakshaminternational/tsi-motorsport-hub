@@ -6,6 +6,9 @@ import { db, fetchList, type Row } from "@/lib/db";
 
 const THIS_YEAR = new Date().getFullYear();
 const YEARS = Array.from({ length: 16 }, (_, i) => String(THIS_YEAR + 1 - i));
+/** Used when the admin doesn't know someone's year; they fill it in when they claim the profile. */
+const EARLIER = "earlier";
+const classLabel = (year: string) => (year === EARLIER ? "an earlier batch" : `the class of ${year}`);
 
 /**
  * End-of-season tool: tick the members who are graduating, pick their year and
@@ -44,7 +47,7 @@ export function GraduateMembers() {
     if (!data || selected.length === 0) return;
     if (
       !confirm(
-        `Move ${selected.length} member${selected.length === 1 ? "" : "s"} to the alumni wall as the class of ${year}? They will be removed from the current team page.`,
+        `Move ${selected.length} member${selected.length === 1 ? "" : "s"} to the alumni wall as ${classLabel(year)}? They will be removed from the current team page.`,
       )
     )
       return;
@@ -65,8 +68,8 @@ export function GraduateMembers() {
           .from("alumni")
           .insert({
             name: m.name,
-            batch_year: year,
-            graduation_year: Number(year),
+            batch_year: year === EARLIER ? "Earlier batch" : year,
+            graduation_year: year === EARLIER ? null : Number(year),
             position: m.position,
             subteam: m.subteam_id ? (subteamName[m.subteam_id] ?? null) : null,
             photo_url: m.photo_url,
@@ -181,6 +184,7 @@ export function GraduateMembers() {
                 {YEARS.map((y) => (
                   <option key={y}>{y}</option>
                 ))}
+                <option value={EARLIER}>Earlier batch (year unknown)</option>
               </select>
             </label>
             <div>
@@ -211,11 +215,12 @@ export function GraduateMembers() {
             onClick={() => void graduate()}
             className="mt-6 rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground disabled:opacity-50"
           >
-            {busy ? "MOVING…" : `MOVE ${selected.length} TO ALUMNI (CLASS OF ${year})`}
+            {busy ? "MOVING…" : `MOVE ${selected.length} TO ALUMNI (${year === EARLIER ? "EARLIER BATCH" : `CLASS OF ${year}`})`}
           </button>
           <p className="mt-2 text-xs text-muted-foreground">
             Their name, role, department, photo and LinkedIn are copied over. They can later claim
-            and update their profile from the alumni join page.
+            and update their profile from the alumni join page. &quot;Earlier batch&quot; people show under
+            Earlier members in the by-year view until they add their graduation year.
           </p>
         </>
       )}
