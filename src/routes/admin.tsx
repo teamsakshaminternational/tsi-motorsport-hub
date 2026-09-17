@@ -7,6 +7,7 @@ import { useAdminSession } from "@/hooks/useAdminSession";
 import { CrudSection, type Field } from "@/components/admin/CrudSection";
 import { AlumniNetwork, usePendingAlumniCount } from "@/components/admin/AlumniNetwork";
 import { GraduateMembers } from "@/components/admin/GraduateMembers";
+import { SiteImages } from "@/components/admin/SiteImages";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
@@ -173,12 +174,19 @@ const sections: {
     ],
   },
   {
+    key: "images",
+    label: "Site images",
+    table: "",
+    title: "",
+    fields: [],
+  },
+  {
     key: "content",
     label: "Page text",
     table: "page_content",
     title: "Page text",
     description:
-      "Text shown on the public pages. Edit a value to change it on the site; leave it empty to use the built-in default. home_hero_image takes an image link (upload a photo under Gallery photos and copy its link).",
+      "Text shown on the public pages. Edit a value to change it on the site; leave it empty to use the built-in default. Background photos are changed in the Site images tab.",
     labelField: "key",
     orderBy: "key",
     sortable: false,
@@ -295,6 +303,8 @@ function Admin() {
         {active.key === "members" && <GraduateMembers />}
         {active.key === "network" ? (
           <AlumniNetwork />
+        ) : active.key === "images" ? (
+          <SiteImages />
         ) : (
         <CrudSection
           key={active.key}

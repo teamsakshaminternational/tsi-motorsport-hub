@@ -95,7 +95,7 @@ function Home() {
         </div>
       </section>}
 
-      <section className="relative flex min-h-72 items-center justify-center overflow-hidden bg-fixed bg-cover bg-center px-5 text-center md:min-h-96" style={{ backgroundImage: `url(${mediaBase}/site/band1.webp)` }}>
+      <section className="relative flex min-h-72 items-center justify-center overflow-hidden bg-fixed bg-cover bg-center px-5 text-center md:min-h-96" style={{ backgroundImage: `url(${content(cms, "home_quote_image", `${mediaBase}/site/band1.webp`)})` }}>
         <div className="absolute inset-0 bg-background/65" /><Reveal className="relative"><blockquote className="max-w-5xl font-display text-4xl uppercase leading-tight md:text-7xl">“When in doubt, <span className="text-primary">throttle it out.</span>”</blockquote></Reveal>
       </section>
 
@@ -107,7 +107,7 @@ function Home() {
 
       {sponsors.length > 0 && <section className="overflow-hidden border-y border-border bg-surface py-12"><Reveal className="section-x mx-auto max-w-7xl"><h2 className="text-3xl">Backed <span className="text-primary">by</span></h2></Reveal><div className="mt-8 overflow-hidden"><div className={`flex w-max gap-4 px-4 ${sponsors.length > 1 ? "sponsor-marquee" : "mx-auto"}`}>{marqueeSponsors.map((s: Row, i: number) => <div key={`${s.id}-${i}`} className="flex h-24 w-52 shrink-0 items-center justify-center rounded bg-foreground p-5">{s.logo_url ? <img src={s.logo_url} alt={s.name} loading="lazy" decoding="async" className="max-h-14 max-w-full object-contain" /> : <span className="font-display text-background">{s.name}</span>}</div>)}</div></div></section>}
 
-      <section className="relative min-h-[28rem] overflow-hidden md:aspect-[16/9] md:max-h-[92vh] md:min-h-0"><img src={`${mediaBase}/site/team_photo.webp`} alt="Team Saksham International crew" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[center_20%]" /><div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" /><div className="section-x relative mx-auto flex h-full min-h-[28rem] max-w-7xl items-end pb-12 md:min-h-0"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">One team. One machine.</p><h2 className="mt-3 max-w-lg text-5xl leading-[0.9] md:text-7xl">Meet the crew</h2><Link to="/team" className="mt-7 inline-flex items-center gap-2 rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground">OUR TEAM <ArrowRight className="h-4 w-4" /></Link></Reveal></div></section>
+      <section className="relative h-[28rem] overflow-hidden md:h-[min(56.25vw,90vh)]"><img src={content(cms, "home_crew_image", `${mediaBase}/site/team_photo.webp`)} alt="Team Saksham International crew" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-[center_20%]" /><div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/10 to-transparent" /><div className="section-x relative mx-auto flex h-full min-h-[28rem] max-w-7xl items-end pb-12 md:min-h-0"><Reveal><p className="text-xs uppercase tracking-[0.3em] text-primary">One team. One machine.</p><h2 className="mt-3 max-w-lg text-5xl leading-[0.9] md:text-7xl">Meet the crew</h2><Link to="/team" className="mt-7 inline-flex items-center gap-2 rounded bg-primary px-6 py-3 font-display text-sm tracking-widest text-primary-foreground">OUR TEAM <ArrowRight className="h-4 w-4" /></Link></Reveal></div></section>
     </div>
   );
 }

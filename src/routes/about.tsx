@@ -68,7 +68,7 @@ function About() {
           </Reveal>
           <Reveal delay={120}>
             <img
-              src={`${MEDIA}/site/band2.webp`}
+              src={content(cms, "about_image", `${MEDIA}/site/band2.webp`)}
               alt="Team Saksham International buggy in the workshop"
               loading="lazy"
               decoding="async"
@@ -131,7 +131,7 @@ function About() {
 
       <section className="relative min-h-[26rem] overflow-hidden border-t border-border">
         <img
-          src={`${MEDIA}/site/team_photo.webp`}
+          src={content(cms, "about_team_image", `${MEDIA}/site/team_photo.webp`)}
           alt="Team Saksham International with their buggy"
           loading="lazy"
           decoding="async"
