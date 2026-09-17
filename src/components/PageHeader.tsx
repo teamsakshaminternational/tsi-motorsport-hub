@@ -12,14 +12,14 @@ export function PageHeader({
 }) {
   return (
     <section className="grain-overlay border-b border-border bg-surface">
-      <div className="section-x mx-auto max-w-7xl py-16 md:py-24">
+      <div className="section-x mx-auto max-w-7xl py-14 md:py-20">
         <Reveal>
           {eyebrow && (
-            <p className="mb-3 font-mono text-xs uppercase tracking-[0.3em] text-primary">
+            <p className="mb-4 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-primary before:h-px before:w-8 before:bg-primary">
               {eyebrow}
             </p>
           )}
-          <h1 className="text-4xl leading-[0.95] md:text-6xl">{title}</h1>
+          <h1 className="max-w-4xl text-5xl leading-[0.9] md:text-7xl">{title}</h1>
           {children && (
             <div className="mt-4 max-w-2xl text-base text-muted-foreground">{children}</div>
           )}

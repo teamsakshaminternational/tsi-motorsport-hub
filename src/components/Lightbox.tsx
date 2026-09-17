@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useRef } from "react";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 
 export type LightboxItem = { image_url: string; caption?: string | null };
@@ -14,6 +14,7 @@ export function Lightbox({
   onClose: () => void;
   onIndexChange: (i: number) => void;
 }) {
+  const touchStart = useRef<number | null>(null);
   const move = useCallback(
     (delta: number) => {
       if (index === null || items.length === 0) return;
@@ -46,6 +47,16 @@ export function Lightbox({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
+      onTouchStart={(event) => {
+        touchStart.current = event.touches[0]?.clientX ?? null;
+      }}
+      onTouchEnd={(event) => {
+        const start = touchStart.current;
+        const end = event.changedTouches[0]?.clientX;
+        touchStart.current = null;
+        if (start === null || end === undefined || Math.abs(start - end) < 45) return;
+        move(start > end ? 1 : -1);
+      }}
     >
       <button
         onClick={onClose}
@@ -83,6 +94,8 @@ export function Lightbox({
       <img
         src={item.image_url}
         alt={item.caption ?? "Team Saksham International photo"}
+        loading="lazy"
+        decoding="async"
         onClick={(e) => e.stopPropagation()}
         className="max-h-[80vh] w-auto max-w-full object-contain"
       />

@@ -144,6 +144,21 @@
   }
 }
 
+@utility hide-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility hero-ken-burns {
+  animation: hero-ken-burns 18s ease-in-out infinite alternate;
+}
+
+@utility sponsor-marquee {
+  animation: sponsor-marquee 28s linear infinite;
+}
+
 @utility reveal {
   opacity: 0;
   transform: translateY(28px);
@@ -155,4 +170,37 @@
 @utility reveal-in {
   opacity: 1;
   transform: none;
+}
+
+@keyframes hero-ken-burns {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes sponsor-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
 }

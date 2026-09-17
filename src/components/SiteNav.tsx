@@ -17,7 +17,7 @@ export function SiteNav() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+    <header className="sticky top-0 z-40 border-b border-border bg-background/90 backdrop-blur-md">
       <div className="section-x mx-auto flex h-[4.5rem] max-w-7xl items-center justify-between">
         <Link to="/" className="flex items-center gap-3" onClick={() => setOpen(false)}>
           <img
@@ -25,14 +25,16 @@ export function SiteNav() {
             alt="TSI logo"
             width={640}
             height={383}
-            className="h-11 w-auto"
+            loading="eager"
+            decoding="async"
+            className="h-10 w-auto sm:h-11"
           />
           <span className="flex flex-col font-display leading-none tracking-wide">
-            <span className="text-lg">
+            <span className="text-base sm:text-lg">
               TEAM <span className="text-primary">SAKSHAM</span>
             </span>
-            <span className="mt-1 text-[0.7rem] tracking-[0.32em] text-muted-foreground">
-              INTERNATIONAL
+            <span className="mt-1 text-[0.65rem] tracking-[0.24em] text-muted-foreground sm:text-[0.7rem] sm:tracking-[0.32em]">
+              INTERNATIONAL · VIT CHENNAI
             </span>
           </span>
         </Link>
