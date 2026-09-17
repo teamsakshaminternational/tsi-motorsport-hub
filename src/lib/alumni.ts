@@ -67,6 +67,11 @@ export function isLinkedInUrl(value: string) {
   return /^https?:\/\/([a-z]{2,3}\.)?linkedin\.com\//i.test(value);
 }
 
+/** Gmail compose link — works on any device, unlike mailto: which needs a mail app set up. */
+export function gmailCompose(email: string) {
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}`;
+}
+
 export function whatsappNumber(phone: unknown) {
   const digits = String(phone ?? "").replace(/\D/g, "");
   if (digits.length === 10) return `91${digits}`;

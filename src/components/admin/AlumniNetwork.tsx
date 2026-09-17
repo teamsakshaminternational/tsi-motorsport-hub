@@ -306,6 +306,18 @@ function Directory({
     onChange();
   }
 
+  async function removeRow(row: Row) {
+    if (!confirm(`Permanently delete ${row.name} from the alumni list? This cannot be undone.`))
+      return;
+    const { error } = await db.from("alumni").delete().eq("id", row.id);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    toast.success("Deleted");
+    onChange();
+  }
+
   async function toggleCar(alumniId: string, generationId: string, on: boolean) {
     const res = on
       ? await db
@@ -491,6 +503,12 @@ function Directory({
                       <option value="pending">Pending</option>
                       <option value="hidden">Hidden</option>
                     </select>
+                    <button
+                      onClick={() => void removeRow(a)}
+                      className="mt-2 flex items-center gap-1 text-xs text-muted-foreground hover:text-destructive"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" /> Delete
+                    </button>
                   </td>
                 </tr>
               );

@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Linkedin, Mail, MapPin, Search, X } from "lucide-react";
+import { ArrowRight, Check, Copy, Linkedin, Mail, MapPin, Search, X } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
-import { alumniDirectoryQuery, initials, type AlumniProfile } from "@/lib/alumni";
+import { alumniDirectoryQuery, gmailCompose, initials, type AlumniProfile } from "@/lib/alumni";
 import type { Row } from "@/lib/db";
 import { preloadQueries } from "@/lib/preload";
 import { Thumb } from "@/components/Thumb";
@@ -335,13 +335,14 @@ function AlumniCard({
               </a>
             )}
             {email && (
-              <a
-                href={`mailto:${email}`}
+              <button
+                onClick={onOpen}
                 aria-label={`Email ${a.name}`}
+                title="Show email"
                 className="text-muted-foreground hover:text-primary"
               >
                 <Mail className="h-4 w-4" />
-              </a>
+              </button>
             )}
           </span>
         </div>
@@ -369,6 +370,7 @@ function ProfileDialog({
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
+  const [copied, setCopied] = useState(false);
   const years = [a.joined_year, a.graduation_year].filter(Boolean).join(" – ");
 
   return (
@@ -449,13 +451,29 @@ function ProfileDialog({
           )}
           {email && (
             <a
-              href={`mailto:${email}`}
+              href={gmailCompose(email)}
+              target="_blank"
+              rel="noreferrer"
               className="inline-flex items-center gap-2 rounded border border-border px-4 py-2 font-display text-xs tracking-widest hover:border-primary hover:text-primary"
             >
-              <Mail className="h-4 w-4" /> EMAIL
+              <Mail className="h-4 w-4" /> EMAIL IN GMAIL
             </a>
           )}
         </div>
+        {email && (
+          <div className="mt-4 flex flex-wrap items-center gap-2 rounded border border-border px-3 py-2 text-sm">
+            <span className="select-all break-all">{email}</span>
+            <button
+              onClick={() => {
+                void navigator.clipboard.writeText(email).then(() => setCopied(true));
+              }}
+              className="ml-auto inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-primary"
+            >
+              {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
