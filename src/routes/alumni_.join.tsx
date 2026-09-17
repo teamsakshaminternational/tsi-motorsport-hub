@@ -374,7 +374,8 @@ function JoinAlumni() {
               </Label>
               <p className="text-xs text-muted-foreground">
                 We'll send a one-time code to confirm it's you. Your email stays private unless you
-                choose to show it.
+                choose to show it. Already on the wall? Use the same email and you'll be taken
+                straight to your profile to edit it.
               </p>
               <Primary busy={busy} type="submit">
                 <Mail className="h-4 w-4" /> SEND MY CODE
@@ -682,7 +683,7 @@ function JoinAlumni() {
               }}
               className="underline hover:text-primary"
             >
-              not you?
+              use a different email
             </button>
           </p>
         )}

@@ -1,10 +1,16 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, Copy, Linkedin, Mail, MapPin, Search, X } from "lucide-react";
+import { ArrowRight, Check, Copy, Linkedin, Mail, MapPin, Search, UserPen, X } from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
-import { alumniDirectoryQuery, externalUrl, gmailCompose, initials, type AlumniProfile } from "@/lib/alumni";
+import {
+  alumniDirectoryQuery,
+  externalUrl,
+  gmailCompose,
+  initials,
+  type AlumniProfile,
+} from "@/lib/alumni";
 import type { Row } from "@/lib/db";
 import { preloadQueries } from "@/lib/preload";
 import { Thumb } from "@/components/Thumb";
@@ -118,6 +124,12 @@ function Alumni() {
           >
             ARE YOU A TSI ALUM? JOIN THE NETWORK
             <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+          </Link>
+          <Link
+            to="/alumni/join"
+            className="inline-flex items-center gap-2 rounded border border-border px-6 py-3 font-display text-sm tracking-widest transition-colors hover:border-primary hover:text-primary"
+          >
+            <UserPen className="h-4 w-4" /> ALREADY ON THE WALL? UPDATE YOUR PROFILE
           </Link>
         </div>
       </section>
@@ -474,6 +486,13 @@ function ProfileDialog({
             </button>
           </div>
         )}
+        <p className="mt-5 text-xs text-muted-foreground">
+          Is this you?{" "}
+          <Link to="/alumni/join" className="text-primary hover:underline">
+            Update your photo, job or contact details
+          </Link>{" "}
+          by signing in with the email you used.
+        </p>
       </div>
     </div>
   );

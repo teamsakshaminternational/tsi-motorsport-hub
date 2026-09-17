@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { Instagram, Menu, X } from "lucide-react";
+
+export const INSTAGRAM_URL = "https://www.instagram.com/teamsakshaminternational/";
 import { useState } from "react";
 
 const links = [
@@ -51,6 +53,15 @@ export function SiteNav() {
               {l.label}
             </Link>
           ))}
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Team Saksham International on Instagram"
+            className="text-muted-foreground transition-colors hover:text-primary"
+          >
+            <Instagram className="h-5 w-5" />
+          </a>
         </nav>
 
         <button
@@ -76,6 +87,14 @@ export function SiteNav() {
               {l.label}
             </Link>
           ))}
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 py-2 font-display text-lg tracking-wide text-foreground"
+          >
+            <Instagram className="h-5 w-5 text-primary" /> INSTAGRAM
+          </a>
         </nav>
       )}
     </header>

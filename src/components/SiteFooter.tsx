@@ -1,5 +1,7 @@
 import { Link } from "@tanstack/react-router";
+import { Instagram } from "lucide-react";
 import { NewsletterForm } from "@/components/NewsletterForm";
+import { INSTAGRAM_URL } from "@/components/SiteNav";
 
 export function SiteFooter() {
   return (
@@ -25,6 +27,14 @@ export function SiteFooter() {
           <p className="text-sm text-muted-foreground md:text-right">
             Baja SAE team, Vellore Institute of Technology, Chennai.
           </p>
+          <a
+            href={INSTAGRAM_URL}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex w-fit items-center gap-2 rounded border border-border px-4 py-2 text-sm transition-colors hover:border-primary hover:text-primary"
+          >
+            <Instagram className="h-4 w-4" /> @teamsakshaminternational
+          </a>
           <nav className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-muted-foreground md:justify-end">
             <Link to="/about" className="hover:text-primary">
               About
@@ -43,6 +53,9 @@ export function SiteFooter() {
             </Link>
             <Link to="/alumni/join" className="text-primary hover:underline">
               Join the alumni network
+            </Link>
+            <Link to="/alumni/join" className="hover:text-primary">
+              Update my alumni profile
             </Link>
             <Link to="/admin" className="hover:text-primary">
               Admin
