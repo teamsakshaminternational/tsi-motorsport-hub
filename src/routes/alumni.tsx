@@ -1,7 +1,18 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { HydrationBoundary, useQuery } from "@tanstack/react-query";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, Copy, Linkedin, Mail, MapPin, Search, UserPen, X } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Clock,
+  Copy,
+  Linkedin,
+  Mail,
+  MapPin,
+  Search,
+  UserPen,
+  X,
+} from "lucide-react";
 import { PageHeader } from "@/components/PageHeader";
 import { Reveal } from "@/components/Reveal";
 import {
@@ -52,7 +63,7 @@ function Alumni() {
   const [query, setQuery] = useState("");
   const [car, setCar] = useState<string | null>(null);
   const [country, setCountry] = useState("");
-  const [mode, setMode] = useState<GroupMode>("car");
+  const [mode, setMode] = useState<GroupMode>("year");
   const [open, setOpen] = useState<AlumniProfile | null>(null);
 
   const alumni = useMemo(() => data?.alumni ?? [], [data]);
@@ -161,7 +172,7 @@ function Alumni() {
               </select>
             )}
             <div className="flex rounded border border-input p-0.5 text-xs">
-              {(["car", "year"] as const).map((m) => (
+              {(["year", "car"] as const).map((m) => (
                 <button
                   key={m}
                   onClick={() => setMode(m)}
@@ -289,6 +300,14 @@ function Avatar({ a, size }: { a: AlumniProfile; size: string }) {
 
 function jobLine(a: AlumniProfile) {
   return [a.current_role_text, a.company].filter(Boolean).join(" @ ");
+}
+
+function updatedOn(a: AlumniProfile) {
+  const raw = a.updated_at ?? a.submitted_at;
+  if (!raw) return "";
+  const d = new Date(raw);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
 }
 
 function place(a: AlumniProfile) {
@@ -431,7 +450,7 @@ function ProfileDialog({
           </div>
         )}
 
-        {(jobLine(a) || a.industry || place(a)) && (
+        {(jobLine(a) || a.industry || place(a) || updatedOn(a)) && (
           <div className="mt-5 space-y-1 border-t border-border pt-5 text-sm">
             {jobLine(a) && <p className="text-base">{jobLine(a)}</p>}
             {a.industry && <p className="text-muted-foreground">{a.industry}</p>}
@@ -439,6 +458,12 @@ function ProfileDialog({
               <p className="flex items-center gap-1 text-muted-foreground">
                 <MapPin className="h-3.5 w-3.5" />
                 {place(a)}
+              </p>
+            )}
+            {updatedOn(a) && (
+              <p className="flex items-center gap-1 pt-1 text-xs text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />
+                Last updated: {updatedOn(a)}
               </p>
             )}
           </div>
